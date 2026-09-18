@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="google-site-verification" content="jBaTwdsuuu2BeLuyWgLPqDXpiP5bIc8dM9Ua82q1IJQ" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skill Worker Hub — Find Trusted Skilled Workers</title>
+<meta name="description" content="Skill Worker Hub helps customers find skilled workers by skill and location.">
+<style>
+:root{--p:#123b70;--a:#f59e0b;--bg:#f6f8fc;--text:#142033;--muted:#667085;--card:#fff;--line:#e5e7eb;--green:#16a34a}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.nav{max-width:1150px;margin:auto;padding:15px 18px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:900;color:var(--p);font-size:22px}.brand span{color:var(--a)}button{font:inherit;cursor:pointer}
+.nav button,.primary{background:var(--p);color:#fff;border:0;border-radius:9px;padding:11px 16px;font-weight:800}
+.hero{background:linear-gradient(135deg,#123b70,#2163a0);color:#fff;padding:62px 18px}.heroin{max-width:950px;margin:auto;text-align:center}.hero h1{font-size:clamp(32px,6vw,54px);margin:0 0 12px}.hero p{font-size:18px;opacity:.92}.searchbox{margin:28px auto 0;background:#fff;padding:9px;border-radius:12px;display:flex;gap:8px;max-width:900px;box-shadow:0 12px 35px #0003}.searchbox input,.searchbox select{border:0;outline:0;padding:14px;font-size:15px;flex:1;min-width:0}.searchbox button{border:0;background:var(--a);color:#111827;border-radius:8px;padding:0 20px;font-weight:900}
+.wrap{max-width:1150px;margin:34px auto;padding:0 18px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:12px}.sectionhead h2{margin:0}.categories{display:flex;gap:9px;overflow:auto;padding:16px 0}.cat{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:22px;padding:9px 14px}.cat.active{background:var(--p);color:#fff;border-color:var(--p)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:0 5px 18px #1018280a}.top{display:flex;gap:13px;align-items:center}.avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#e7eef8;display:flex;align-items:center;justify-content:center;font-size:28px}.name{margin:0 0 4px}.skill{color:var(--p);font-weight:800}.verified{font-size:12px;background:#e9f8ef;color:#15803d;border-radius:20px;padding:4px 8px;margin-left:5px}.meta{color:var(--muted);font-size:14px;line-height:1.8;margin:14px 0}.actions{display:flex;gap:8px}.actions a{flex:1;text-align:center;text-decoration:none;padding:10px;border-radius:8px;font-weight:800}.wa{background:#16a34a;color:#fff}.call{background:#edf2f7;color:var(--p)}
+.empty{padding:45px;text-align:center;color:var(--muted);grid-column:1/-1}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}.stat{background:#fff;border:1px solid var(--line);padding:20px;border-radius:13px;text-align:center}.stat b{font-size:25px;color:var(--p)}
+footer{background:#102a4c;color:#dbe7f5;margin-top:55px;padding:32px 18px;text-align:center}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:50;align-items:center;justify-content:center;padding:18px}.modalbox{background:#fff;width:min(540px,100%);max-height:92vh;overflow:auto;border-radius:15px;padding:22px}.close{float:right;border:0;background:none;font-size:25px}.modalbox input,.modalbox select,.modalbox textarea{width:100%;padding:11px;margin:6px 0 12px;border:1px solid var(--line);border-radius:8px}.modalbox label{font-size:13px;font-weight:800}.full{width:100%;margin-top:5px}.adminrow{display:flex;gap:8px;align-items:center}.danger{background:#fee2e2;color:#b91c1c;border:0;border-radius:7px;padding:8px}
+@media(max-width:600px){.searchbox{flex-direction:column}.searchbox button{padding:13px}.stats{grid-template-columns:1fr}.nav button{padding:9px 11px}}
+.adminActions{margin-top:12px;display:flex;gap:8px}.edit{background:#edf2f7;color:#123b70;border:0;border-radius:7px;padding:8px;font-weight:800}.del{background:#fee2e2;color:#b91c1c;border:0;border-radius:7px;padding:8px;font-weight:800}
+.workStatus{display:inline-block;margin-top:6px;padding:4px 9px;border-radius:999px;font-weight:800;font-size:12px}.workStatus.available{background:#e9f8ef;color:#15803d}.workStatus.unavailable{background:#fee2e2;color:#b91c1c}.firebaseStatus{margin:12px 0;padding:10px;border-radius:9px;background:#fff8e1;color:#7a4f00;font-size:13px;display:none}.firebaseStatus.ok{background:#e9f8ef;color:#166534}.firebaseStatus.err{background:#fee2e2;color:#991b1b}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="brand">👷 Skill Worker <span>Hub</span></div><div style="display:flex;gap:8px"><button onclick="openModal('add')">+ Add Worker</button><button id="adminBtn" onclick="adminLogin()">🔐 Admin Login</button></div></div></header>
+<section class="hero"><div class="heroin"><h1>Find Skilled Workers Near You</h1><p>Connect with plumbers, carpenters, electricians, masons and other skilled professionals.</p>
+<div class="searchbox"><input id="q" placeholder="Search by worker, skill or location" oninput="render()"><input id="pinSearch" inputmode="numeric" maxlength="6" placeholder="Search by PIN Code" oninput="render()"><select id="skillFilter" onchange="render()"><option value="">All Skills</option></select><button onclick="render()">Search</button></div></div></section>
+<main class="wrap">
+<div id="firebaseStatus" class="firebaseStatus"></div>
+<div class="stats"><div class="stat"><b id="count">0</b><br>Workers Listed</div><div class="stat"><b id="skillCount">0</b><br>Skills</div><div class="stat"><b>24/7</b><br>Easy Contact</div></div>
+<div class="sectionhead"><h2>Browse by Skill</h2></div><div class="categories" id="cats"></div>
+<div class="sectionhead"><h2>Featured Workers</h2><button class="primary" onclick="openModal('add')">List Your Service</button></div>
+<div class="grid" id="grid"></div>
+</main>
+<footer><strong>Skill Worker Hub</strong><br><small>Helping customers connect with skilled workers.</small><br><small>© 2026 Skill Worker Hub</small><br><small>🔒 Worker mobile numbers are masked for privacy. Call uses the saved number without displaying it publicly.</small><div style="margin-top:12px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap"><button onclick="showInfo('about')" style="background:none;border:0;color:#dbe7f5;text-decoration:underline">About Us</button><button onclick="showInfo('contact')" style="background:none;border:0;color:#dbe7f5;text-decoration:underline">Contact Us</button><button onclick="showInfo('privacy')" style="background:none;border:0;color:#dbe7f5;text-decoration:underline">Privacy Policy</button><button onclick="showInfo('terms')" style="background:none;border:0;color:#dbe7f5;text-decoration:underline">Terms & Conditions</button></div></footer>
+<div class="modal" id="infoModal"><div class="modalbox"><button class="close" onclick="closeInfo()">×</button><div id="infoContent"></div></div></div>
+<div class="modal" id="modal"><div class="modalbox"><button class="close" onclick="closeModal()">×</button>
+<h2 id="modalTitle">Add Worker</h2><form id="form" onsubmit="saveWorker(event)">
+<label>Worker Name *</label><input id="name" required>
+<label>Skill *</label><select id="skill" required></select>
+<label>WhatsApp Number *</label><input id="phone" placeholder="e.g. 919876543210" required>
+<label>Work Status *</label><select id="status" required><option value="available">Available for Work</option><option value="unavailable">Unavailable</option></select>
+<label>Location *</label><input id="location" required>
+<label>PIN Code *</label><input id="pincode" inputmode="numeric" maxlength="6" placeholder="e.g. 826001" required>
+<label>Experience</label><input id="experience" placeholder="e.g. 5 years">
+<label>Photo URL (optional)</label><input id="photo" placeholder="https://...">
+<label>About / Services</label><textarea id="about" rows="3" placeholder="Short description"></textarea>
+<button id="saveBtn" class="primary full">Save Worker</button></form></div></div>
+<div class="modal" id="adminModal"><div class="modalbox"><button class="close" onclick="closeAdmin()">×</button><h2>Admin Panel</h2><div id="adminContent"><label>Admin Password</label><input id="adminPassword" type="password" placeholder="Enter password"><button class="primary full" onclick="checkAdmin()">Login</button><p style="font-size:13px;color:#667085">Default password: <b>admin123</b></p></div></div></div>
+
+<script>
+const skills=["Construction Worker","Plumber","Carpenter","Electrician","Painter","Welder","Mason","Tile Worker","AC Technician","Motor Mechanic","Vehicle Driver","Parlour / Salon","Medical Emergency","Other"];
+let data=[];
+let firebaseLoadToken=0;
+let editIndex=-1,selected="",isAdmin=false;
+const localKey="swh_commercial";
+const demoData=[
+ {id:"demo-1",name:"Raj Kumar",skill:"Plumber",phone:"919876543210",location:"Ranchi",pincode:"834001",experience:"6 years",about:"Plumbing, pipe fitting and repair",verified:true},
+ {id:"demo-2",name:"Amit Das",skill:"Carpenter",phone:"919876543211",location:"Ranchi",pincode:"834001",experience:"8 years",about:"Furniture and wood work",verified:true},
+ {id:"demo-3",name:"Ramesh Kumar",skill:"Mason",phone:"919876543212",location:"Kanke",pincode:"834006",experience:"10 years",about:"Masonry and construction work",verified:false}
+];
+function setFirebaseStatus(msg,type){const el=document.getElementById("firebaseStatus");if(!el)return;el.textContent=msg;el.className="firebaseStatus "+(type||"");el.style.display="block"}
+async function loadOnlineWorkers(){
+  // Firestore live listener handles loading and syncing workers.
+  return true;
+}
+
+function setup(){data=[];skillFilter.innerHTML='<option value="">All Skills</option>'+skills.map(s=>`<option>${s}</option>`).join("");skill.innerHTML=skills.map(s=>`<option>${s}</option>`).join("");cats.innerHTML='<button class="cat active" onclick="pick(this,\'\')">All</button>'+skills.map(s=>`<button class="cat" onclick="pick(this,'${s}')">${s}</button>`).join("");render();}
+function pick(el,s){selected=s;skillFilter.value=s;document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));el.classList.add("active");render()}
+function maskPhone(phone){const d=digits(phone);if(!d)return "Not available";if(d.length<=4)return "••••"+d;return "••••••"+d.slice(-4)}
+function statusLabel(status){return status==="unavailable"?"Unavailable":"Available for Work"}
+function statusClass(status){return status==="unavailable"?"unavailable":"available"}
+function render(){const term=(q.value||"").toLowerCase().trim(),pin=(pinSearch.value||"").replace(/\D/g,""),f=skillFilter.value||selected;const list=data.map((w,index)=>({w,index})).filter(({w})=>(!f||w.skill===f)&&(!term||[w.name,w.skill,w.location,w.about,w.pincode,statusLabel(w.status)].join(" ").toLowerCase().includes(term))&&(!pin||String(w.pincode||"").includes(pin)));count.textContent=data.length;skillCount.textContent=new Set(data.map(x=>x.skill).filter(Boolean)).size;grid.innerHTML=list.length?list.map(({w,index})=>`<article class="card"><div class="top"><div class="avatar">${w.photo?`<img src="${safeAttr(w.photo)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`:"👷"}</div><div><h3 class="name">${esc(w.name)} ${w.verified?'<span class="verified">✓ Verified</span>':""}</h3><div class="skill">${esc(w.skill)}</div></div></div><div class="meta">📍 ${esc(w.location)}<br>📮 PIN: ${esc(w.pincode||"Not specified")}<br>🛠️ ${esc(w.experience||"Experience not specified")}<br>ℹ️ ${esc(w.about||"Skilled professional")}<br><span class="workStatus ${statusClass(w.status)}">● ${esc(statusLabel(w.status))}</span><br>📱 Mobile: <b>${esc(maskPhone(w.phone))}</b></div><div class="actions"><a class="wa" target="_blank" rel="noopener" href="https://wa.me/${digits(w.phone)}">WhatsApp</a><a class="call" href="tel:+${digits(w.phone)}" onclick="return confirmCall(${JSON.stringify(String(w.name||"Worker"))},${JSON.stringify(digits(w.phone))})">Call</a></div>${isAdmin?`<div class="adminActions"><button class="edit" onclick="editWorker(${index})">✏️ Edit</button><button class="del" onclick="deleteWorker(${index})">🗑️ Delete</button></div>`:""}</article>`).join(""):'<div class="empty">No workers found. Try another skill, location or PIN code.</div>';}
+function confirmCall(name,phone){return confirm("Call "+name+"?\n\nMobile: "+maskPhone(phone)+"\n\nThe full number is kept private on the website and will be used only to start the call.")}
+
+function openModal(){editIndex=-1;form.reset();modalTitle.textContent="Add Worker";saveBtn.textContent="Save Worker";modal.style.display="flex";if(!window.firebaseReady||!window.swhFirebase){setFirebaseStatus("Firebase is still connecting. Save will work after connection is ready.","");}}
+function editWorker(i){if(!isAdmin){adminLogin();return;}const w=data[i];if(!w||!w.id||String(w.id).startsWith("local-")||String(w.id).startsWith("demo-")){alert("This worker does not have a valid Firestore document ID.");return;}editIndex=i;name.value=w.name||"";skill.value=w.skill||skills[0];phone.value=w.phone||"";location.value=w.location||"";pincode.value=w.pincode||"";experience.value=w.experience||"";photo.value=w.photo||"";about.value=w.about||"";status.value=w.status||"available";modalTitle.textContent="Edit Worker";saveBtn.textContent="Update Worker";modal.style.display="flex"}
+async function deleteWorker(i){
+ if(!isAdmin){adminLogin();return;}
+ const worker=data[i];
+ if(!worker||!worker.id||String(worker.id).startsWith("local-")||String(worker.id).startsWith("demo-")){alert("This worker does not have a valid Firestore document ID.");return;}
+ if(!confirm("Delete this worker?"))return;
+ try{
+  await window.swhFirebase.deleteWorker(worker.id);
+ }catch(err){
+  console.error(err);
+  alert("Delete failed: "+(err.code||err.message||"Unknown Firebase error"));
+ }
+}
+
+function adminLogin(){document.getElementById("adminModal").style.display="flex"}
+function closeAdmin(){document.getElementById("adminModal").style.display="none";document.getElementById("adminPassword").value=""}
+function checkAdmin(){if(document.getElementById("adminPassword").value==="admin123"){isAdmin=true;closeAdmin();document.getElementById("adminBtn").textContent="🔓 Admin Active";render();alert("Admin login successful! Now Edit/Delete buttons are active.");}else alert("Wrong password.")}
+function closeModal(){modal.style.display="none"}
+async function saveWorker(e){
+ e.preventDefault();
+ if(!window.firebaseReady||!window.swhFirebase){alert("Firebase is not connected. Please wait a moment and try again.");return;}
+ const f=e.currentTarget;
+ const w={
+  name:f.querySelector("#name").value.trim(),skill:f.querySelector("#skill").value,
+  phone:digits(f.querySelector("#phone").value),location:f.querySelector("#location").value.trim(),
+  pincode:f.querySelector("#pincode").value.replace(/\D/g,""),experience:f.querySelector("#experience").value.trim(),
+  photo:f.querySelector("#photo").value.trim(),about:f.querySelector("#about").value.trim(),
+  status:f.querySelector("#status").value,verified:false
+ };
+ if(!w.name||!w.phone||!w.location||w.pincode.length!==6){alert("Please fill Worker Name, WhatsApp Number, Location and a valid 6-digit PIN Code.");return;}
+ const btn=saveBtn; const editing=editIndex>=0; const old=editing?data[editIndex]:null;
+ btn.disabled=true; btn.textContent=editing?"Updating...":"Saving...";
+ try{
+  if(editing){
+   if(!old?.id) throw new Error("This worker has no Firestore document ID.");
+   await window.swhFirebase.updateWorker(old.id,w);
+  }else{
+   await window.swhFirebase.addWorker(w);
+  }
+  editIndex=-1;
+  closeModal();
+ }catch(err){
+  console.error(err);
+  alert((editing?"Update":"Save")+" failed: "+(err.code||err.message||"Unknown Firebase error"));
+ }finally{
+  btn.disabled=false; btn.textContent="Save Worker";
+ }
+}
+
+function digits(s){return String(s).replace(/\D/g,"")}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
+function safeAttr(s){return esc(s).replace(/javascript:/gi,"")}
+function showInfo(type){const content={about:`<h2>About Skill Worker Hub</h2><p>Skill Worker Hub is a platform designed to help customers discover skilled workers by skill and location, including plumbers, carpenters, electricians, masons and other professionals.</p><p>Our goal is to make it easier for customers and local skilled workers to connect.</p>`,contact:`<h2>Contact Us</h2><p>For questions, worker listing issues, corrections or other website-related matters, please contact the Skill Worker Hub administrator.</p><p><b>WhatsApp/Phone:</b> Use the contact details provided by the administrator.</p>`,privacy:`<h2>Privacy Policy</h2><p>Skill Worker Hub may display information submitted for worker listings, such as name, skill, location, experience and contact details. Please do not submit passwords, financial information or other sensitive personal information.</p><p>Information is used to help customers contact listed workers. If you are a worker and want your listing corrected or removed, contact the administrator.</p>`,terms:`<h2>Terms & Conditions</h2><p>Worker information should be accurate and submitted only with the worker's permission. Skill Worker Hub provides a connection service and does not guarantee the quality, availability, pricing or conduct of any listed worker.</p><p>Users should independently verify worker details and agree on work terms before hiring.</p>`};infoContent.innerHTML=content[type]||content.about;infoModal.style.display='flex'}
+function closeInfo(){infoModal.style.display='none'}
+setup();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
+  onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA4yRmpdhihggkDl9BPEHmmdGfL6DcFoHI",
+  authDomain: "skill-worker-hub-74564.firebaseapp.com",
+  projectId: "skill-worker-hub-74564",
+  storageBucket: "skill-worker-hub-74564.firebasestorage.app",
+  messagingSenderId: "133782145661",
+  appId: "1:133782145661:web:8bb431a65d6117c2e87f14",
+  measurementId: "G-269R38Q8SD"
+};
+
+let unsubscribeWorkers = null;
+
+function normalizeWorker(d) {
+  const x = d.data() || {};
+  return {
+    id: d.id,
+    name: x.name ?? x.Name ?? "",
+    skill: x.skill ?? x.Skill ?? "Other",
+    phone: String(x.phone ?? x.Phone ?? ""),
+    location: x.location ?? x.Location ?? x.Address ?? "",
+    pincode: String(x.pincode ?? x.Pincode ?? ""),
+    experience: x.experience ?? x.Experience ?? "",
+    photo: x.photo ?? x.Photo ?? "",
+    about: x.about ?? x.About ?? "",
+    verified: x.verified ?? false,
+    status: x.status ?? "available",
+    createdAt: x.createdAt ?? null,
+    updatedAt: x.updatedAt ?? null
+  };
+}
+
+function timeValue(v) {
+  if (v && typeof v.toMillis === "function") return v.toMillis();
+  if (v && typeof v.seconds === "number") return v.seconds * 1000;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const workersRef = collection(db, "workers");
+
+  window.swhFirebase = {
+    async addWorker(w) {
+      if (!window.firebaseReady) throw new Error("Firebase is not ready yet.");
+      const ref = await addDoc(workersRef, {
+        ...w,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      return ref.id;
+    },
+
+    async updateWorker(id, w) {
+      if (!id || String(id).startsWith("demo-") || String(id).startsWith("local-")) {
+        throw new Error("Invalid Firestore worker ID.");
+      }
+      await updateDoc(doc(db, "workers", String(id)), {
+        ...w,
+        updatedAt: serverTimestamp()
+      });
+    },
+
+    async deleteWorker(id) {
+      if (!id || String(id).startsWith("demo-") || String(id).startsWith("local-")) {
+        throw new Error("Invalid Firestore worker ID.");
+      }
+      await deleteDoc(doc(db, "workers", String(id)));
+    },
+
+    startWorkersListener() {
+      if (unsubscribeWorkers) unsubscribeWorkers();
+
+      unsubscribeWorkers = onSnapshot(
+        workersRef,
+        (snap) => {
+          data = snap.docs
+            .map(normalizeWorker)
+            .sort((a, b) =>
+              timeValue(b.createdAt || b.updatedAt) -
+              timeValue(a.createdAt || a.updatedAt)
+            );
+
+          render();
+          setFirebaseStatus(
+            "Firebase connected • " + data.length + " worker(s) synced live.",
+            "ok"
+          );
+        },
+        (err) => {
+          console.error("Firestore listener error:", err);
+          window.firebaseReady = false;
+          setFirebaseStatus(
+            "Firestore sync failed: " + (err.code || err.message || "Unknown error"),
+            "err"
+          );
+        }
+      );
+    }
+  };
+
+  window.firebaseReady = true;
+  setFirebaseStatus(
+    "Firebase connected • Starting live Firestore sync...",
+    "ok"
+  );
+  window.swhFirebase.startWorkersListener();
+
+} catch (err) {
+  console.error("Firebase initialization error:", err);
+  window.firebaseReady = false;
+  setFirebaseStatus(
+    "Firestore connection failed: " + (err.code || err.message || "Unknown error"),
+    "err"
+  );
+}
+</script>
+</body></html>
